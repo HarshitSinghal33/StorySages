@@ -1,28 +1,29 @@
 import { useSelector } from 'react-redux'
-import { userUID } from '../../Redux/slice/AuthSlice'
+import { uid } from '../../Redux/slice/UserAuthSlice'
 import { useQuery } from 'react-query';
 import { getDoc, doc } from 'firebase/firestore';
 import { fireStoreDb } from '../../../Firebase';
-export default function useFetchUserData({isPrivate = false, userID}) {
-    const user = useSelector(userUID);
+
+export function useFetchUserData({isPrivate = false, userID}) {
+    const userUID = useSelector(uid);
     
     const fetchDocument = async () => {
         const docRef = isPrivate
-            ? doc(fireStoreDb, 'users', user, 'private', 'privateData')
+            ? doc(fireStoreDb, 'users', userUID, 'private', 'privateData')
             : doc(fireStoreDb, 'users', userID)
 
         const docSnapShot = await getDoc(docRef)
 
-        if (!docSnapShot.exists) {
-            console.log('user not found');
+        if (!docSnapShot.exists()) {
             return null
         }
+        
         return docSnapShot.data()
     }
 
     const { data: userData, error: userDataError, isLoading: isUserDataLoading } = useQuery(isPrivate ? 'private' : userID, fetchDocument, {
         staleTime: 60 * 60 * 1000,
-        enabled : isPrivate ? !!user : !!userID
+        enabled : isPrivate ? !!userUID : !!userID
     })
 
     return { userData, userDataError, isUserDataLoading }

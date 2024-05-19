@@ -8,7 +8,7 @@ const imagesURL = [
     'https://img.freepik.com/free-vector/cute-cat-with-love-sign-hand-cartoon-illustration-animal-nature-concept-isolated-flat-cartoon-style_138676-3419.jpg'
 ]
 
-export default function UserImageProfilesettle({ onSelectImage, currentURL }) {
+export function UpdateProfileImage({ onSelectImage, currentURL }) {
     const [currentImg, setCurrentImg] = useState(currentURL || imagesURL[0]);
     const handleImageChange = (url) => {
         setCurrentImg(url);
@@ -20,7 +20,7 @@ export default function UserImageProfilesettle({ onSelectImage, currentURL }) {
             <img src={currentImg} alt="selected profile image" className='h-32 w-32 rounded-full my-6' />
             <h2 className='mb-3 font-semibold'>Select an icon</h2>
             <div className='flex flex-wrap gap-y-3 justify-center'>
-                {imagesURL.map(url => <img className='ml-2 rounded-full shrink-0 h-[90px] w-[90px] cursor-pointer' src={url} alt="" onClick={() => handleImageChange(url)} />)}
+                {imagesURL.map(url => <img key={url} className='ml-2 rounded-full shrink-0 h-[90px] w-[90px] cursor-pointer' src={url} alt="" onClick={() => handleImageChange(url)} />)}
             </div>
         </div>
     )

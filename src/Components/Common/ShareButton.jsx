@@ -3,7 +3,7 @@ import React from "react";
 // Components
 import { FaRegPaperPlane } from "react-icons/fa6";
 import { toast } from "react-toastify";
-import Button from "../ui/Button";
+import { Button } from "../ui/Button";
 
 export const ShareButton = ({ title, url, text }) => {
   const handleShare = async () => {

@@ -1,23 +1,28 @@
-export function removeStoryFromQuery(prevData, storyID) {
+export function removeDataFromQuery(prevData, storyID) {
     const newData = prevData.pages.map(
         (page) => ({
             ...page,
-            data: page.data.filter((story) =>
-                story.id !== storyID
-            ),
+            data: page.data.filter((data) => {
+                if(data.storyID){
+                    return data.storyID !== storyID
+                }
+                if(data.id){
+                    return data.id !== storyID
+                }
+            }),
         })
     )
     return { ...prevData, pages: newData }
 }
 
-export function addStoryInQuery(prevData, story) {
+export function addDataInQuery(prevData, addedData) {
     const updatedData = {
         ...prevData,
         pages: prevData.pages
             ? [
-                { ...prevData.pages[0], data: [story, ...prevData.pages[0].data] }, ...prevData.pages.slice(1)
+                { ...prevData.pages[0], data: [addedData, ...prevData.pages[0].data] }, ...prevData.pages.slice(1)
             ]
-            : [{ data: [story] }]
+            : [{ data: [addedData] }]
     };
     return updatedData;
 }
@@ -28,7 +33,7 @@ export function updateStoryInQuery(prevData, updatedStory) {
         pages: prevData.pages.map(page => ({
             ...page,
             data: page.data.map(story => {
-                if(story.id === updatedStory.id){
+                if (story.storyID === updatedStory.storyID) {
                     return updatedStory
                 }
                 return story

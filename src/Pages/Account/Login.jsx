@@ -7,17 +7,17 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup"
 
 // Redux
-import { loginAsync } from '../../Redux/slice/AuthSlice';
+import { loginAsync } from '../../Redux/slice/UserAuthSlice';
 import { useDispatch } from 'react-redux';
 
 // Utils
 import { validateEmail, validatePassword } from '../../utils/formValidation';
 
 // Components
-import InputField from '../../Components/ui/InputField';
-import FormContainer from '../../Components/auth/FormContainer';
+import { InputField } from '../../Components/ui/InputField';
+import { AuthFormContainer } from '../../Components/Auth/AuthFormContainer';
 
-export default function Login() {
+export function Login() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const schema = yup.object().shape({
@@ -46,7 +46,7 @@ export default function Login() {
   }
 
   return (
-    <FormContainer
+    <AuthFormContainer
       formName={'Login'}
       submit={handleSubmit(onSubmit)}
       submitBtnName={'Login'}
@@ -69,8 +69,8 @@ export default function Login() {
         name={'passwordfield'}
       />
       <div className="text-center mb-3 underline">
-        <Link to={'/Changepassword'}>Forgot password?</Link>
+        <Link to={'/resetpassword'}>Forgot password?</Link>
       </div>
-    </FormContainer>
+    </AuthFormContainer>
   )
 }

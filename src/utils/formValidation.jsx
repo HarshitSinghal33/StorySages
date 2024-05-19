@@ -24,22 +24,23 @@ export const validateTitle = () => {
 
 export const validateDescription = (checkBoxChecked) => {
     return Yup.string().test('words-test', "Write atleast 15 words on Snap", function (value) {
-        if(checkBoxChecked === 'draft') return true;
+        if (checkBoxChecked === 'draft') return true;
         return value.trim().split(' ').length >= 15
     }).test('words-test', "Snap should not be more than 45 words", function (value) {
-        if(checkBoxChecked === 'draft') return true;
+        if (checkBoxChecked === 'draft') return true;
         return value.trim().split(' ').length <= 45
     })
 }
 
 export const validateStory = (checkBoxChecked) => {
-    return Yup.string().test('words-test', "For public sharing, please include a minimum of 450 words and for Private and Unlisted atleast 150 words. No restrictions apply on Draft.", function (value) {
+    return Yup.array().test('words-test', "For public sharing, please include a minimum of 210 words and for Private and Unlisted atleast 120 words. No restrictions apply on Draft.", (story) => {
+        const combineInsert = story.map(obj => obj.insert).join('')
         if (checkBoxChecked === 'public') {
-            return value.trim().split(' ').length >= 450
-        }else if(checkBoxChecked === 'unlisted' || checkBoxChecked === 'private'){
-            return value.trim().split(' ').length >= 150
-        } else {
-            return true
+            return combineInsert.trim().split(' ').length >= 210
         }
+        if (checkBoxChecked === 'unlisted' || checkBoxChecked === 'private') {
+            return combineInsert.trim().split(' ').length >= 120
+        }
+        return true
     })
 }

@@ -4,35 +4,21 @@ import {
     signOut,
     sendPasswordResetEmail,
     GoogleAuthProvider,
-    signInWithRedirect
+    signInWithPopup,
+    sendEmailVerification
 } from "firebase/auth";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { auth } from "../../../Firebase";
-import { fireStoreDb } from "../../../Firebase";
-import { doc, collection, writeBatch, serverTimestamp } from "firebase/firestore";
+import { auth, fireStoreDb } from "../../../Firebase";
+import { useSetInitialData } from "../../Hooks/useSetInitialUserData";
+import { doc, getDoc } from "firebase/firestore";
+const { setData } = useSetInitialData()
 
 export const createAccountAsync = createAsyncThunk('auth/createAccount', async ({ username, email, password }, { rejectWithValue }) => {
     try {
         const credential = await createUserWithEmailAndPassword(auth, email, password)
-        const { uid } = credential.user;
-        const userDocRef = doc(fireStoreDb, 'users', uid);
-        const privateDataDocRef = doc(collection(userDocRef, 'private'), 'privateData');
-        const userData = {
-            joinedData: serverTimestamp(),
-            name: username,
-            description: 'Hey I am now on storySage',
-            profile: 'https://img.freepik.com/free-vector/cute-teddy-bear-waving-hand-cartoon-icon-illustration_138676-2714.jpg',
-            id:uid
-        }
-        const privateData = {
-            saved:[],
-            following:[],
-            liked:[]
-        };
-        const batch = writeBatch(fireStoreDb);
-        batch.set(userDocRef, userData);
-        batch.set(privateDataDocRef, privateData);
-        await batch.commit();
+        await setData({ userUID: credential.user.uid, userName: username });
+        await sendEmailVerification(credential.user)
+        return credential.user.uid
     } catch (error) {
         return rejectWithValue(error.code)
     }
@@ -46,9 +32,9 @@ export const logOut = createAsyncThunk('auth/signOut', async (_, { rejectWithVal
     }
 })
 
-export const changePasswordAsync = createAsyncThunk('auth/changePassword', async ({ userEmail }, { rejectWithValue }) => {
+export const changePasswordAsync = createAsyncThunk('auth/changePassword', async ({ email }, { rejectWithValue }) => {
     try {
-        await sendPasswordResetEmail(auth, userEmail);
+        await sendPasswordResetEmail(auth, email);
     } catch (error) {
         return rejectWithValue(error.code)
     }
@@ -58,8 +44,15 @@ export const changePasswordAsync = createAsyncThunk('auth/changePassword', async
 export const googleSignupAsync = createAsyncThunk('auth/googleSignup', async (_, { rejectWithValue }) => {
     try {
         const googleAuthProvider = new GoogleAuthProvider()
-        await signInWithRedirect(auth, googleAuthProvider)
+        const result = await signInWithPopup(auth, googleAuthProvider);
+        const { uid, displayName } = result.user
+        const checkUserExists = await getDoc(doc(fireStoreDb, 'users', uid));
+        if(!checkUserExists.exists()){
+           await setData({ userUID: uid, userName: displayName }); 
+        }
+        return result.user.uid
     } catch (error) {
+        console.log(error);
         return rejectWithValue(error.code)
     }
 })
@@ -76,14 +69,15 @@ export const loginAsync = createAsyncThunk('auth/login', async ({ email, passwor
 
 const initialStates = {
     userUID: null,
-    isLoading: false
+    isLoading: false,
+    isGoogleAuthLoading: false
 }
 
 const userAuthSlice = createSlice({
     name: 'authSlice',
     initialState: initialStates,
     reducers: {
-        setCurrentUser: (state, action) => {
+        setCurrentUserUID: (state, action) => {
             state.userUID = action.payload
         }
     },
@@ -125,10 +119,21 @@ const userAuthSlice = createSlice({
             .addCase(changePasswordAsync.rejected, (state) => {
                 state.isLoading = false;
             })
+            .addCase(googleSignupAsync.pending, (state) => {
+                state.isGoogleAuthLoading = true;
+            })
+            .addCase(googleSignupAsync.fulfilled, (state, action) => {
+                state.userUID = action.payload
+                state.isGoogleAuthLoading = false;
+            })
+            .addCase(googleSignupAsync.rejected, (state) => {
+                state.isGoogleAuthLoading = false;
+            })
     },
 })
 
-export const { setCurrentUser } = userAuthSlice.actions;
-export const userUID = (state) => state.userAuth.userUID;
+export const { setCurrentUserUID } = userAuthSlice.actions;
+export const uid = (state) => state.userAuth.userUID;
 export const isLoading = (state) => state.userAuth.isLoading;
+export const isGoogleAuthLoading = (state) => state.userAuth.isGoogleAuthLoading;
 export default userAuthSlice.reducer

@@ -1,11 +1,21 @@
+// firebase
 import { doc, writeBatch, collection, where, query, getDocs } from "firebase/firestore"
 import { fireStoreDb } from "../../../Firebase";
+
+// react-query
 import { useQueryClient } from "react-query";
+
+// redux
 import { useSelector } from "react-redux";
-import { userUID } from "../../Redux/slice/AuthSlice";
+import { uid } from "../../Redux/slice/UserAuthSlice";
+
+// component
 import { toast } from "react-toastify";
-export default function useUpdateUserData() {
-  const user = useSelector(userUID)
+import { useNavigate } from "react-router-dom";
+
+export function useUpdateUserData() {
+  const navigate = useNavigate()
+  const userUID = useSelector(uid)
   const queryClient = useQueryClient()
   const setUserData = async (data) => {
     const batch = writeBatch(fireStoreDb)
@@ -13,21 +23,24 @@ export default function useUpdateUserData() {
       const collectionRef = collection(fireStoreDb, 'stories')
       const snapShot = await getDocs(
         query(collectionRef,
-          where('userUID', '==', user),
+          where('authorID', '==', userUID),
           where('visibility', 'in', ['public', 'unlisted', 'private', 'draft'])
         )
       )
 
       if (!snapShot.empty) {
         snapShot.docs.forEach(story => {
-          batch.update(doc(fireStoreDb, 'stories', story.id), { author: data.name, profile: data.profile })
+          batch.update(doc(fireStoreDb, 'stories', story.id), { author: data.name, authorProfile: data.profile })
         })
       }
-      batch.update(doc(fireStoreDb, 'users', user), data)
+      batch.update(doc(fireStoreDb, 'users', userUID), data)
 
       await batch.commit();
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries();
+      toast.info('Update Successful')
+      navigate('/profile')
     } catch (error) {
+      console.log(error);
       toast.error(`Error Occurred : ${error.message}`);
     }
 

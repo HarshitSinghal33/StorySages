@@ -18,7 +18,7 @@ const visibilityOptions = [
     }
 ]
 
-export default function SetStoryVisibility({ register, storyVisibility, ...props }) {
+export function SetStoryVisibility({ register, storyVisibility, ...props }) {
     return (
         <fieldset className='mt-6 ml-3'>
             <legend>Visibility</legend>

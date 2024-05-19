@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { IoEyeSharp } from "react-icons/io5";
 import { IoIosEyeOff } from "react-icons/io";
 
-export default function InputField({ error, register,  type, ...props }) {
+export function InputField({ error, register,  type, ...props }) {
   const [isPasswordSee, setIsPasswordSee] = useState(false) //for change the icon of eye  
 
   // is type is password or text that we got from prop name 'type'

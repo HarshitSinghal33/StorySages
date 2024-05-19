@@ -2,7 +2,7 @@ import { collection, getDocs, limit, orderBy, query, startAfter, where } from "f
 import { useInfiniteQuery } from "react-query";
 import { fireStoreDb } from "../../../Firebase";
 
-export default function useFetchStories({ user, visibility }) {
+export function useFetchStories({ user, visibility }) {
   const getStories = async ({ pageParam }) => {
     const docsLimit = 6;
 
@@ -15,12 +15,12 @@ export default function useFetchStories({ user, visibility }) {
     let storiesQuery = query(
       collectionRef,
       where('visibility', '==', visibility),
-      orderBy('createdDate', 'desc'),
+      orderBy('createdOn', 'desc'),
       limit(docsLimit)
     )
 
     if (user) {
-      storiesQuery = query(storiesQuery, where('userUID', '==', user))
+      storiesQuery = query(storiesQuery, where('authorID', '==', user))
     }
 
     if (pageParam) {

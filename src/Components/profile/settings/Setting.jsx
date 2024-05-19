@@ -1,17 +1,17 @@
 import React from 'react'
-import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
 
 // Components
-import LogOut from './LogOut';
-import RequestPasswordChange from './RequestPasswordChange';
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import { LogOut } from './LogOut';
+import { RequestPasswordChange } from './RequestPasswordChange';
 import { IoIosArrowForward } from "react-icons/io";
 import { FaRegWindowClose } from "react-icons/fa";
 
-export default function Setting({ handleSettingOpen }) {
+export function Setting({ handleSettingOpen }) {
 
     const Links = [
-        { to: '/editprofile', name: 'Edit Profile' },
+        { to: '/updateprofile', name: 'Update Profile' },
         { to: '/likedstories', name: 'Liked Stories' },
         { to: '/savedstories', name: 'Saved Stories' },
         { to: '/following', name: 'Following' },

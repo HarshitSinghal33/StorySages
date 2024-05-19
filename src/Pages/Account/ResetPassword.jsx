@@ -7,23 +7,23 @@ import { yupResolver } from "@hookform/resolvers/yup"
 
 // Redux
 import { useDispatch } from 'react-redux';
-import { changePasswordAsync } from '../../Redux/slice/AuthSlice';
+import { changePasswordAsync } from '../../Redux/slice/UserAuthSlice';
 
 // Utils
 import { validateEmail } from '../../utils/formValidation';
 
 // Components
 import { toast } from 'react-toastify';
-import FormContainer from '../../Components/auth/FormContainer';
-import InputField from '../../Components/ui/InputField';
+import { AuthFormContainer } from '../../Components/Auth/AuthFormContainer';
+import { InputField } from '../../Components/ui/InputField';
 
-export default function ResetPassword() {
+export function ResetPassword() {
   const dispatch = useDispatch()
   const schema = yup.object().shape({
     email: validateEmail(),
   })
 
-  const { register, handleSubmit, setError, formState: { errors } } = useForm({
+  const { register, handleSubmit, setError, setValue, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   })
 
@@ -31,6 +31,7 @@ export default function ResetPassword() {
     try {
       await dispatch(changePasswordAsync({ email })).unwrap()
       toast.success('Email sent successfully.')
+      setValue('email', '')
     } catch (errCode) {
       let errMessage;
       if (errCode === 'auth/invalid-email') {
@@ -46,7 +47,7 @@ export default function ResetPassword() {
   }
 
   return (
-    <FormContainer
+    <AuthFormContainer
       submit={handleSubmit(onSubmit)}
       formName={'Change Password'}
       submitBtnName={'Send Mail'}
@@ -60,6 +61,6 @@ export default function ResetPassword() {
         type={'email'}
         name={'emailfield'}
       />
-    </FormContainer>
+    </AuthFormContainer>
   )
 }

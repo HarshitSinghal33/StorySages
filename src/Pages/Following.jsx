@@ -1,22 +1,21 @@
 import React from 'react';
 
 // Custom Hooks
-import useFetchUserData from '../hooks/fetch/useFetchUserData';
-import useFetchWithID from '../hooks/fetch/useFetchWithID';
+import { useFetchUserData } from '../Hooks/Fetches/useFetchUserData';
+import { useFetchWithID } from '../Hooks/Fetches/useFetchWithID';
 
 // UI Components
-import Header from '../Components/Common/Header';
-import ManualLoadContainer from '../Components/Containers/ManualLoadContainer';
-import Loader from '../Components/Common/Loader';
-import Error from '../Components/Common/Error';
+import { Header } from '../Components/Common/Header';
+import { ManualLoadContainer } from '../Components/Containers/ManualLoadContainer';
+import { Loader } from '../Components/Common/Loader';
+import { Error } from '../Components/Common/Error';
 
-export default function Following() {
+export function Following() {
     const { userData, userDataError, isUserDataLoading } = useFetchUserData({ isPrivate: true });
 
     const reversedFollowingArray = userData && (userData.following ? [...userData.following].reverse() : []);
 
-    const { data, error, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useFetchWithID('following', reversedFollowingArray, true);
-
+    const { data, error, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useFetchWithID({type:'following', idsArray: reversedFollowingArray,fetchFromCollection: 'users'});
     function renderContent() {
         if (isLoading || isUserDataLoading) return <Loader isCenter={true} />;
 
@@ -24,11 +23,11 @@ export default function Following() {
 
         return (
             <ManualLoadContainer
-             data={data}
-             isFetchingNextPage={isFetchingNextPage}
-             hasNextPage={hasNextPage}
-             fetchNextPage={fetchNextPage}
-             isFollowing={true}
+                data={data}
+                isFetchingNextPage={isFetchingNextPage}
+                hasNextPage={hasNextPage}
+                fetchNextPage={fetchNextPage}
+                isFollowing={true}
             />
         )
     }

@@ -1,63 +1,57 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
 
 // Components
-import { PrivateRoute } from './Components/auth/PrivateRoute';
+import { PrivateRoute } from './Components/Auth/PrivateRoute';
 import { ToastContainer } from 'react-toastify';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Loader } from './Components/Common/Loader';
 
 // Pages
-import Home from './Pages/Home';
-import CreateStory from './Pages/Story/CreateStory';
-import Profile from './Pages/profile/Profile';
-import Signup from './Pages/Account/Signup';
-import Login from './Pages/Account/Login';
-import ResetPassword from './Pages/Account/ResetPassword';
-import UpdateStory from './Pages/Story/UpdateStory';
-import LikedStories from './Pages/Story/LikedStories';
-import BookMark from './Pages/Story/SavedStories';
-import AboutPolicy from './Pages/AboutPolicy';
-import ReadStory from './Pages/Story/ReadStory';
-import EditProfile from './Pages/profile/EditProfile';
-import Following from './Pages/Following';
+const Home = lazy(() => import('./Pages/Home').then(module => ({ default: module.Home })));
+const CreateStory = lazy(() => import('./Pages/Story/CreateStory').then(module => ({ default: module.CreateStory })));
+const Profile = lazy(() => import('./Pages/Profile/Profile').then(module => ({ default: module.Profile })));
+const Signup = lazy(() => import('./Pages/Account/Signup').then(module => ({ default: module.Signup })));
+const Login = lazy(() => import('./Pages/Account/Login').then(module => ({ default: module.Login })));
+const ResetPassword = lazy(() => import('./Pages/Account/ResetPassword').then(module => ({ default: module.ResetPassword })));
+const UpdateStory = lazy(() => import('./Pages/Story/UpdateStory').then(module => ({ default: module.UpdateStory })));
+const LikedStories = lazy(() => import('./Pages/Story/LikedStories').then(module => ({ default: module.LikedStories })));
+const SavedStories = lazy(() => import('./Pages/Story/SavedStories').then(module => ({ default: module.SavedStories })));
+const AboutPolicy = lazy(() => import('./Pages/AboutPolicy').then(module => ({ default: module.AboutPolicy })));
+const ReadStory = lazy(() => import('./Pages/Story/ReadStory').then(module => ({ default: module.ReadStory })));
+const UpdateProfile = lazy(() => import('./Pages/Profile/UpdateProfile').then(module => ({ default: module.UpdateProfile })));
+const Following = lazy(() => import('./Pages/Following').then(module => ({ default: module.Following })));
+
 // CSS
-import './App.css';
 import 'react-toastify/dist/ReactToastify.css'
-import { onAuthStateChanged } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
-import { setCurrentUser } from './Redux/slice/AuthSlice';
-import { auth } from '../Firebase';
+import { useOnAuthStateChange } from './Hooks/useOnAuthStateChange';
+import EmailVerifyNotification from './Components/Common/EmailVerifyNotification';
 
 function App() {
-
-  const dispatch = useDispatch()
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      user && dispatch(setCurrentUser(user.uid))
-    })
-    return () => unsubscribe()
-  }, [])
-
+  const { isEmailVerified } = useOnAuthStateChange();
   return (
     <BrowserRouter>
       <ToastContainer position="top-center" autoClose={2400} />
-      <Routes>
-        <Route path='/ResetPassword' element={<ResetPassword />} />
-        <Route path='/Signup' element={<Signup />} />
-        <Route path='/Login' element={<Login />} />
-        <Route index element={<Home />} />
-        <Route path='/home' element={<Home />} />
-        <Route path='/aboutpolicy' element={<AboutPolicy />} />
-        <Route path='/Readstory/:storyID' element={<ReadStory />} />
-        <Route element={<PrivateRoute />}>
-          <Route path='/likedstories' element={<LikedStories/>} />
-          <Route path='/following' element={<Following />} />
-          <Route path='/savedstories' element={<BookMark />} />
-          <Route path='/profile/:sageID?' element={<Profile />} />
-          <Route path='/CreateStory' element={<CreateStory />} />
-          <Route path='/updateStory/:storyID' element={<UpdateStory />} />
-          <Route path='/editprofile' element={<EditProfile />} />
-        </Route>
-      </Routes>
+      {(isEmailVerified === false) && <EmailVerifyNotification />}
+      <Suspense fallback={<Loader isCenter={true} />}>
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path='/home' element={<Home />} />
+          <Route path='/aboutpolicy' element={<AboutPolicy />} />
+          <Route path='/readstory/:storyID' element={<ReadStory />} />
+          <Route path='/resetpassword' element={<ResetPassword />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/login' element={<Login />} />
+          <Route element={<PrivateRoute />}>
+            <Route path='/likedstories' element={<LikedStories />} />
+            <Route path='/following' element={<Following />} />
+            <Route path='/savedstories' element={<SavedStories />} />
+            <Route path='/profile/:sageID?' element={<Profile />} />
+            <Route path='/createStory' element={<CreateStory />} />
+            <Route path='/updateStory/:storyID' element={<UpdateStory />} />
+            <Route path='/updateprofile' element={<UpdateProfile />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }

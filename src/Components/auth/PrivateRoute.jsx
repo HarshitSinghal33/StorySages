@@ -1,15 +1,15 @@
 import { Outlet } from 'react-router-dom';
 
 // Redux
-import { userUID } from '../../Redux/slice/AuthSlice';
+import { uid } from '../../Redux/slice/UserAuthSlice';
 import { useSelector } from 'react-redux';
 
 // Components
-import LoginMessage from './LoginMessage';
+import { LoginMessage } from './LoginMessage';
 
-export const PrivateRoute =  () => {
-    const user = useSelector(userUID)
-    return(
-        user ? <Outlet/> : <LoginMessage/>
+export const PrivateRoute = () => {
+    const userUID = useSelector(uid)
+    return (
+        userUID ? <Outlet /> : <LoginMessage />
     )
 }

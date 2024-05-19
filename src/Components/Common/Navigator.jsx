@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { BsFillPersonFill } from 'react-icons/bs'
 import { FaPlus, FaHome } from 'react-icons/fa'
 
-export default function Navigator() {
+export function Navigator() {
     const { pathname } = useLocation()
     const mainPages = ['/', '/createstory', '/profile'];
 

@@ -1,28 +1,28 @@
 import React from 'react';
 
 // hooks
-import useUpdatePrivateData from '../../../hooks/update/useUpdatePrivateData';
-import useFetchUserData from '../../../hooks/fetch/useFetchUserData';
+import { useUpdatePrivateData } from '../../../Hooks/Updates/useUpdatePrivateData';
+import { useFetchUserData } from '../../../Hooks/Fetches/useFetchUserData';
 
 // Components
 import { toast } from 'react-toastify';
-import Button from '../../ui/Button';
+import { Button } from '../../ui/Button';
 import { CiBookmark } from "react-icons/ci";
 import { BsBookmarkCheckFill } from "react-icons/bs";
 
-export default function SaveButton({ story }) {
+export function SaveButton({ story }) {
     const { userData, userDataError, isUserDataLoading } = useFetchUserData({ isPrivate: true })
-    const { addPrivateData, removePrivateData} = useUpdatePrivateData();
-    const isBookMark = userData && userData.saved ? userData.saved.includes(story.id) : false;
+    const { addPrivateData, removePrivateData } = useUpdatePrivateData();
+    const isBookMark = userData && userData.saved ? userData.saved.includes(story.storyID) : false;
 
     const handleBookMark = () => {
-        isBookMark 
-        ? removePrivateData({ story: story, type: 'saved' }) 
-        : addPrivateData({ story: story, type: 'saved' })
+        isBookMark
+            ? removePrivateData({ data: story, type: 'saved' })
+            : addPrivateData({ data: story, type: 'saved' })
     };
 
-    if(userDataError) toast.error(`Error Occurred: ${userDataError.message}`);
-    
+    if (userDataError) toast.error(`Error Occurred: ${userDataError.message}`);
+
     return (
         <Button className='flex items-center gap-1 font-semibold mt-3' isDisabled={isUserDataLoading} onClick={handleBookMark}>
             <span>{isBookMark ? "Saved" : "Save"}:</span>

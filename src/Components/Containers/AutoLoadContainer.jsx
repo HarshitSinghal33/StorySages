@@ -1,22 +1,22 @@
 import React, { useEffect } from 'react';
 
 // Custom Hooks
-import useScroll from '../../hooks/useScroll';
+import { useScrollEnd } from '../../hooks/useScrollEnd';
 
 // UI Components
-import Error from '../Common/Error';
-import Loader from '../Common/Loader';
-import StoryList from '../Story/StoryList';
+import { Error } from '../Common/Error';
+import { Loader } from '../Common/Loader';
+import { StoryList } from '../Story/StoryList';
 
-export default function AutoLoadContainer({ stories, error, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, isUser, isLoadingCenter, message }) {
-    const isEnd = useScroll();
+export function AutoLoadContainer({ stories, error, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, isUser, isLoadingCenter, message }) {
+    const isEnd = useScrollEnd();
     useEffect(() => {
         if (isEnd && hasNextPage && !isLoading && !isFetchingNextPage) {
             fetchNextPage();
         }
     }, [isEnd, hasNextPage, isLoading, isFetchingNextPage, fetchNextPage])
 
-    if (isLoading) return <Loader isCenter={isLoadingCenter}/>;
+    if (isLoading) return <Loader isCenter={isLoadingCenter} />;
     if (error) return <Error message={error.message} />;
     const allStories = stories && stories.pages.flatMap((page) => page.data);
     return (

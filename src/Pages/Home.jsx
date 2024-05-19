@@ -1,14 +1,14 @@
 import React from 'react';
 
 // Custom Hooks
-import useFetchStories from '../hooks/fetch/useFetchStories';
+import { useFetchStories } from '../hooks/Fetches/useFetchStories';
 
 // UI Components
-import Navigator from '../Components/Common/Navigator';
-import Header from '../Components/Common/Header';
-import AutoLoadContainer from '../Components/Containers/AutoLoadContainer';
+import { Navigator } from '../Components/Common/Navigator';
+import { Header } from '../Components/Common/Header';
+import { AutoLoadContainer } from '../Components/Containers/AutoLoadContainer';
 
-export default function Home() {
+export function Home() {
   const {
     stories,
     storiesError,

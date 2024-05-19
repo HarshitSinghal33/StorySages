@@ -1,13 +1,16 @@
 import React from 'react'
+
+//Redux
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux';
-import { currentFolder } from '../../Redux/slice/CurrentFolderSlice'
-import { setStoryFolder } from '../../Redux/slice/CurrentFolderSlice';
-export default function UserStoryFilter() {
+import { currentVisibility } from '../../Redux/slice/ProfileVisibilitySlice'
+import { setStoriesVisibility } from '../../Redux/slice/ProfileVisibilitySlice';
+
+export function ProfileStoryFilter() {
   const dispatch = useDispatch()
-  const folder = useSelector(currentFolder);
+  const folder = useSelector(currentVisibility);
   const handleFolderChange = (e) => {
-    dispatch(setStoryFolder(e.target.value))
+    dispatch(setStoriesVisibility(e.target.value))
   }
 
   return (

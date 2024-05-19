@@ -6,29 +6,26 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 
 // Custom Hooks
-import useFetchUserData from '../../hooks/fetch/useFetchUserData';
-import useUpdateUserData from '../../hooks/update/useUpdateUserData';
-import { useCheckFormChange } from '../../hooks/useCheckFormChange';
+import { useFetchUserData } from '../../Hooks/Fetches/useFetchUserData';
+import { useUpdateUserData } from '../../Hooks/Updates/useUpdateUserData';
+import { useCheckFormChange } from '../../Hooks/useCheckFormChange';
 
 // Redux
-import { userUID } from '../../Redux/slice/AuthSlice';
+import { uid } from '../../Redux/slice/UserAuthSlice';
 import { useSelector } from 'react-redux';
 
 // UI Components
-import InputField from '../../Components/ui/InputField';
-import TextArea from '../../Components/ui/Textarea';
-import Button from '../../Components/ui/Button';
-import Loader from '../../Components/Common/Loader';
-import Error from '../../Components/Common/Error';
-import UserImageProfilesettle from '../../Components/profile/ImageProfile';
-import Header from '../../Components/Common/Header';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { InputField } from '../../Components/ui/InputField';
+import { Textarea } from '../../Components/ui/Textarea';
+import { Button } from '../../Components/ui/Button';
+import { Loader } from '../../Components/Common/Loader';
+import { Error } from '../../Components/Common/Error';
+import { UpdateProfileImage } from '../../Components/profile/UpdateProfileImage';
+import { Header } from '../../Components/Common/Header';
 
-export default function EditProfile() {
-  const user = useSelector(userUID)
-  const navigate = useNavigate()
-  const { userData, userDataError, isUserDataLoading } = useFetchUserData({ userID: user });
+export function UpdateProfile() {
+  const userUID = useSelector(uid)
+  const { userData, userDataError, isUserDataLoading } = useFetchUserData({ userID: userUID });
   const { setUserData } = useUpdateUserData()
   const { isFormValuesChange, handleFormChange } = useCheckFormChange({ initialData: userData });
 
@@ -37,10 +34,8 @@ export default function EditProfile() {
     description: Yup.string().trim().required("description is Required"),
     profile: Yup.string()
   })
-
   const { register, handleSubmit, watch, setValue } = useForm({
     resolver: yupResolver(schema),
-    mode: 'onBlur'
   })
 
   useEffect(() => {
@@ -52,15 +47,12 @@ export default function EditProfile() {
   }, [userData]);
 
   const formDataChange = watch()
-
   useEffect(() => {
     handleFormChange(formDataChange)
   }, [formDataChange]);
 
-  const submit = async (data) =>{ 
-   await setUserData(data, user)
-   toast.info('Update Successful')
-  //  navigate('/profile')
+  const submit = async (data) => {
+    setUserData(data, userUID)
   }
 
   function renderContent() {
@@ -69,17 +61,16 @@ export default function EditProfile() {
     if (userData) return (
       <div className='flex justify-center w-full'>
         <form className='px-3 max-w-[750px] w-full' onSubmit={handleSubmit(submit)}>
-          <UserImageProfilesettle
+          <UpdateProfileImage
             currentURL={userData.profile}
             onSelectImage={(imageURL) => setValue('profile', imageURL)}
           />
           <InputField placeholder={'Name'} register={register('name')} />
-          <TextArea register={register('description')} />
+          <Textarea register={register('description')} />
           <Button type={'submit'} buttonText={'Submit'} className='w-full mt-3' isDisabled={!isFormValuesChange} variant={isFormValuesChange ? 'primary' : 'secondary'} />
         </form>
       </div>
     )
-
   }
 
   return (

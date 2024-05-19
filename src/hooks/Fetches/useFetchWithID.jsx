@@ -1,8 +1,9 @@
 import { collection, getDocs, limit, where, query } from "firebase/firestore"
 import { useInfiniteQuery } from "react-query"
 import { fireStoreDb } from '../../../Firebase'
-export default function useFetchWithID(type, idsArray, isUserCollection) {
-    const collectionRef = collection(fireStoreDb, isUserCollection ? 'users' : 'stories');
+
+export function useFetchWithID({type, idsArray, fetchFromCollection}) {
+    const collectionRef = collection(fireStoreDb, fetchFromCollection);
     const fetchDocuments = async (pageParam) => {
         const docLimit = 6;
 
@@ -13,13 +14,12 @@ export default function useFetchWithID(type, idsArray, isUserCollection) {
         let documentQuery = query(collectionRef, limit(docLimit))
 
         const slicedFetchIdsArray = pageParam === 1 ? idsArray.slice(0, docLimit) : idsArray.slice((pageParam - 1) * docLimit, (pageParam * docLimit) + 1)
-
         if (slicedFetchIdsArray.length === 0) return nullData;
 
-        documentQuery = query(documentQuery, where('id', 'in', slicedFetchIdsArray))
-
-        if (!isUserCollection) {
-            documentQuery = query(documentQuery, where('visibility', '==', 'public'))
+        if (fetchFromCollection === 'users') {
+            documentQuery = query(documentQuery, where('id', 'in', slicedFetchIdsArray));
+        }else{
+            documentQuery = query(documentQuery, where('storyID', 'in', slicedFetchIdsArray), where('visibility', '==', 'public'))
         }
 
         const snapShot = await getDocs(documentQuery)

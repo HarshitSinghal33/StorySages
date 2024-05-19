@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userAuthSlice from './slice/AuthSlice';
-import CurrentFolderSlice from "./slice/CurrentFolderSlice";
+import userAuthSlice from './slice/UserAuthSlice';
+import ProfileVisibilitySlice from "./slice/ProfileVisibilitySlice";
 export const store = configureStore({
     reducer : {
         userAuth: userAuthSlice,
-        currentFolder: CurrentFolderSlice
+        profileVisibility: ProfileVisibilitySlice
     }
 })

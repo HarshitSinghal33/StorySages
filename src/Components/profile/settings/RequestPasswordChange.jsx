@@ -6,15 +6,15 @@ import { auth } from '../../../../Firebase';
 
 //Redux
 import { useDispatch } from 'react-redux';
-import { changePasswordAsync } from '../../../Redux/slice/AuthSlice';
+import { changePasswordAsync } from '../../../Redux/slice/UserAuthSlice';
 
 // Components
 import { toast } from 'react-toastify';
-import Modal from '../../Common/Modal';
+import { Modal } from '../../Common/Modal';
 import { IoIosArrowForward } from 'react-icons/io';
 
 
-export default function RequestPasswordChange() {
+export function RequestPasswordChange() {
     const [userEmail, setUserEmail] = useState();
     const [modalOpen, setModalOpen] = useState(false);
     const dispatch = useDispatch()
@@ -30,7 +30,7 @@ export default function RequestPasswordChange() {
     const handlePasswordChange = async () => {
         try {
             setModalOpen(false)
-            await dispatch(changePasswordAsync({userEmail})).unwrap()
+            await dispatch(changePasswordAsync({ userEmail })).unwrap()
             toast.success('Email sent successfully.')
         } catch (error) {
             toast.error(`Error occurred in email: ${error.message}`)
@@ -42,7 +42,7 @@ export default function RequestPasswordChange() {
                 <span>Change password</span>
                 <IoIosArrowForward fontSize={24} />
             </div>
-            <Modal message={`Get a email to change Password? on ${userEmail}`} onCancel={handleModalOpen} onConfirm={handlePasswordChange} confirmButtonName={'Send'} open={modalOpen}/>
+            <Modal message={`Get a email to change Password? on ${userEmail}`} onCancel={handleModalOpen} onConfirm={handlePasswordChange} confirmButtonName={'Send'} open={modalOpen} />
         </>
     )
 }

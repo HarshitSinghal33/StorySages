@@ -4,36 +4,36 @@ import { useParams } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 // Custom Hooks
-import useFetchUserData from '../../hooks/fetch/useFetchUserData';
-import useFetchStories from '../../hooks/fetch/useFetchStories';
+import { useFetchUserData } from '../../Hooks/Fetches/useFetchUserData';
+import { useFetchStories } from '../../Hooks/Fetches/useFetchStories';
 
 // Redux
-import { userUID } from '../../Redux/slice/AuthSlice';
-import { currentFolder } from '../../Redux/slice/CurrentFolderSlice';
+import { uid } from '../../Redux/slice/UserAuthSlice';
+import { currentVisibility } from '../../Redux/slice/ProfileVisibilitySlice';
 
 // UI Components
-import Navigator from '../../Components/Common/Navigator';
-import Header from '../../Components/Common/Header';
-import Setting from '../../Components/profile/settings/Setting';
-import UserDetail from '../../Components/profile/ProfileDetail';
-import UserStoryFilter from '../../Components/profile/ProfileStoryFilter';
-import Loader from '../../Components/Common/Loader';
-import Error from '../../Components/Common/Error';
-import AutoLoadContainer from '../../Components/Containers/AutoLoadContainer';
+import { Navigator } from '../../Components/Common/Navigator';
+import { Header } from '../../Components/Common/Header';
+import { Setting } from '../../Components/Profile/Settings/Setting';
+import { ProfileDetail } from '../../Components/Profile/ProfileDetail';
+import { ProfileStoryFilter } from '../../Components/Profile/ProfileStoryFilter';
+import { Loader } from '../../Components/Common/Loader';
+import { Error } from '../../Components/Common/Error';
+import { AutoLoadContainer } from '../../Components/Containers/AutoLoadContainer';
 
-export default function Profile() {
+export function Profile() {
   const { sageID } = useParams();
-  const user = useSelector(userUID);
-  const folder = useSelector(currentFolder);
+  const userUID = useSelector(uid);
+  const folder = useSelector(currentVisibility);
   const [settingOpen, isSettingOpen] = useState(false);
-  const isCurrentUserProfile = !sageID || sageID === user;
+  const isCurrentUserProfile = !sageID || sageID === userUID;
   const handleSettingOpen = () => isSettingOpen(prev => !prev);
 
   const {
     userData: profileData,
     userDataError: profileDataError,
     isUserDataLoading: isProfileDataLoading
-  } = useFetchUserData({ userID: sageID || user })
+  } = useFetchUserData({ userID: sageID || userUID })
 
   const {
     stories,
@@ -43,7 +43,7 @@ export default function Profile() {
     isFetchingNextPage,
     fetchNextPage
   } = useFetchStories({
-    user: isCurrentUserProfile ? user : sageID,
+    user: isCurrentUserProfile ? userUID : sageID,
     visibility: isCurrentUserProfile ? folder : 'public'
   })
 
@@ -52,19 +52,19 @@ export default function Profile() {
       <Header />
 
       {isProfileDataLoading && <Loader isCenter={true} />}
-      
+
       {profileDataError && <Error message={userDataError.message} />}
 
       {profileData && (
         <>
-          <UserDetail
+          <ProfileDetail
             isCurrentUserProfile={isCurrentUserProfile}
             profileData={profileData}
             handleSettingOpen={handleSettingOpen}
             sageID={sageID ? sageID : null}
           />
 
-          {isCurrentUserProfile && <UserStoryFilter />}
+          {isCurrentUserProfile && <ProfileStoryFilter />}
 
           <AutoLoadContainer
             stories={stories}

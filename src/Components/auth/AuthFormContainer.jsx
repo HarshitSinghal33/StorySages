@@ -1,16 +1,24 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
 
 // Redux
-import { isLoading } from '../../Redux/slice/AuthSlice';
+import { isLoading, isGoogleAuthLoading, uid } from '../../Redux/slice/UserAuthSlice';
 import { useSelector } from 'react-redux';
 
 // Components
-import Button from '../ui/Button';
-import Googlesignup from './Googlesignup'
+import { Link, useNavigate } from 'react-router-dom'
+import { Button } from '../ui/Button';
+import { GoogleAuth } from './GoogleAuth'
 
-export default function FormContainer({ children, formName, submitBtnName, submit, otherLinkTextName, otherLink, isGoogleSignup }) {
-  const isLoad = useSelector(isLoading)
+export function AuthFormContainer({ children, formName, submitBtnName, submit, otherLinkTextName, otherLink, isGoogleSignup }) {
+  const navigate = useNavigate()
+  const userUID = useSelector(uid);
+  const isLoad = useSelector(isLoading);
+  const isGoogleAuthLoad = useSelector(isGoogleAuthLoading);
+
+  useEffect(() => {
+    userUID && navigate('/')
+  },[userUID])
+
   return (
     <section className='h-screen w-full flex justify-center items-center gap-x-4'>
       <div className='absolute max-w-[430px] w-full p-6 rounded-lg bg-black shadow-form'>
@@ -18,7 +26,7 @@ export default function FormContainer({ children, formName, submitBtnName, submi
 
         <form onSubmit={submit}>
           {children}
-          <Button type='submit' isLoading={isLoad} disabled={isLoad} buttonText={submitBtnName} className='h-12 w-full my-1'/>
+          <Button type='submit' isDisabled={isGoogleAuthLoad} isLoading={isLoad} disabled={isLoad} buttonText={submitBtnName} className='h-12 w-full my-1' />
         </form>
 
         <div className="text-center mt-3">
@@ -31,7 +39,7 @@ export default function FormContainer({ children, formName, submitBtnName, submi
             <div className="h-[1px] bg-gray-400 w-full my-6 flex justify-center items-center">
               <span className="bg-black px-3 font-bold">Or</span>
             </div>
-            <Googlesignup formName={formName} />
+            <GoogleAuth formName={formName} />
           </>
         )}
       </div>

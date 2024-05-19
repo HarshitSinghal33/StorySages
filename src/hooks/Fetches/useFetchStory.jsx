@@ -2,7 +2,7 @@ import { getDoc, doc } from "firebase/firestore"
 import { useQuery } from "react-query"
 import { fireStoreDb } from "../../../Firebase"
 
-export default function useFetchStory({ storyID, isStory }) {
+export function useFetchStory({ storyID, isStory }) {
     const fetchDocument = async () => {
         const docSnapShot = await getDoc(doc(fireStoreDb, 'stories', storyID));
 

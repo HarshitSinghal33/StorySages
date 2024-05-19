@@ -7,16 +7,17 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup"
 
 // Redux
-import { createAccountAsync } from '../../Redux/slice/AuthSlice';
+import { createAccountAsync } from '../../Redux/slice/UserAuthSlice';
 import { useDispatch } from 'react-redux';
+
 // Utils
-import { validateEmail, validateName , validatePassword, recheckPassword } from '../../utils/formValidation';
+import { validateEmail, validateName, validatePassword, recheckPassword } from '../../utils/formValidation';
 
 // Components
-import InputField from '../../Components/ui/InputField';
-import FormContainer from '../../Components/auth/FormContainer';
+import { InputField } from '../../Components/ui/InputField';
+import { AuthFormContainer } from '../../Components/Auth/AuthFormContainer';
 
-export default function Signup() {
+export function Signup() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const schema = yup.object().shape({
@@ -30,9 +31,9 @@ export default function Signup() {
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = async ( {username, email, password} = data) => {
+  const onSubmit = async ({ username, email, password } = data) => {
     try {
-      await dispatch(createAccountAsync({username,email,password})).unwrap();
+      await dispatch(createAccountAsync({ username, email, password })).unwrap();
       navigate('/')
     } catch (errCode) {
       let errMessage;
@@ -44,14 +45,14 @@ export default function Signup() {
         errMessage = `Unexpected Error occurred!: ${errCode} please contact to developer`
       }
       setError('email', {
-        type:'manual',
+        type: 'manual',
         message: errMessage
       })
     }
   }
 
   return (
-    <FormContainer
+    <AuthFormContainer
       formName={'Signup'}
       submit={handleSubmit(onSubmit)}
       submitBtnName={'Signup'}
@@ -87,6 +88,6 @@ export default function Signup() {
         type={'password'}
         name={'confirmpasswordfield'}
       />
-    </FormContainer>
+    </AuthFormContainer>
   )
 }

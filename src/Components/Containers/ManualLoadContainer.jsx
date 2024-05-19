@@ -1,11 +1,11 @@
 import React from 'react'
 
 // Components
-import FollowingCard from '../FollowingCard'
-import StoryList from '../Story/StoryList'
-import Button from '../ui/Button'
+import { FollowingCard } from '../Profile/Follow/FollowingCard'
+import { StoryList } from '../Story/StoryList'
+import { Button } from '../ui/Button'
 
-export default function ManualLoadContainer({ data, isFetchingNextPage, fetchNextPage, hasNextPage, isFollowing }) {
+export function ManualLoadContainer({ data, isFetchingNextPage, fetchNextPage, hasNextPage, isFollowing }) {
     const allPagesData = data && data.pages.flatMap(page => page.data)
 
     function handleRenderData() {

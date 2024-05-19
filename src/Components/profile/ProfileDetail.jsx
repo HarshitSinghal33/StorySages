@@ -1,15 +1,20 @@
 import React from 'react'
-import useFetchUserData from '../../hooks/fetch/useFetchUserData';
-import FollowButton from './FollowButton';
-import Button from '../ui/Button'
+
+// hooks
+import { useFetchUserData } from '../../Hooks/Fetches/useFetchUserData';
+
+// Components
 import { ShareButton } from '../Common/ShareButton';
+import { FollowButton } from './Follow/FollowButton';
+import { Button } from '../ui/Button';
 import { TbGridDots } from "react-icons/tb";
 import { toast } from 'react-toastify';
-export default function UserDetail({ profileData, isCurrentUserProfile, handleSettingOpen, sageID }) {
+
+export function ProfileDetail({ profileData, isCurrentUserProfile, handleSettingOpen, sageID }) {
     const { userData, userDataError } = useFetchUserData({ isPrivate: true });
     const isFollow = userData && (userData.following ? userData.following.includes(sageID) : false)
 
-    if(userDataError) toast.error(`Error Occurred: ${userDataError.message}`)
+    if (userDataError) toast.error(`Error Occurred: ${userDataError.message}`)
     return (
         <div className='border-b-2 pb-3 border-slate-600 md:flex md:justify-center w-full'>
             <div className='max-w-[1200px] mt-6 md:flex md:justify-evenly w-full'>
@@ -29,9 +34,9 @@ export default function UserDetail({ profileData, isCurrentUserProfile, handleSe
                             <span>Setting</span>
                             <TbGridDots />
                         </Button>
-                        : <FollowButton isFollow={isFollow} followingUserData={profileData}/> 
+                        : <FollowButton isFollow={isFollow} followingUserData={profileData} />
                     }
-                    <ShareButton title={`See my profile ${profileData.name} on storysages`} url={window.location.href} text={' Follow me on Storysages to experience the magic of words!'} />
+                    <ShareButton title={`See my profile ${profileData.name} on storysages`} url={`https://storysages-kh.firebaseapp.com/profile/${profileData.id}`} text={' Follow me on Storysages to experience the magic of words!'} />
                 </div>
             </div>
         </div>

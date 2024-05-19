@@ -2,7 +2,7 @@ import React from 'react'
 import { cva } from 'class-variance-authority'
 import { cn } from '../../utils/cn'
 
-export default function Button({ className, isDisabled, isLoading, loadingText, buttonText, children, variant, ...props }) {
+export function Button({ className, isDisabled, isLoading, loadingText, buttonText, children, variant, ...props }) {
     return (
         <button {...props} className={cn(buttonVariant({ variant }), className)} disabled={isLoading || isDisabled} >
             {isLoading ? (
